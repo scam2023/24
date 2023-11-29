@@ -1,0 +1,124 @@
+Write a Java Program to implement Iterator Pattern for Designing Menu like Breakfast, Lunch or Dinner Menu
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+// Item class representing a menu item
+class MenuItem {
+    private String name;
+    private String description;
+
+    public MenuItem(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return name + " - " + description;
+    }
+}
+
+// Menu interface with iterator method
+interface Menu {
+    Iterator<MenuItem> createIterator();
+}
+
+// Concrete implementation of a menu
+class BreakfastMenu implements Menu {
+    private List<MenuItem> items;
+
+    public BreakfastMenu() {
+        items = new ArrayList<>();
+        addItem("Eggs and Bacon", "Scrambled eggs with crispy bacon");
+        addItem("Pancakes", "Fluffy pancakes with syrup");
+    }
+
+    public void addItem(String name, String description) {
+        MenuItem item = new MenuItem(name, description);
+        items.add(item);
+    }
+
+    @Override
+    public Iterator<MenuItem> createIterator() {
+        return items.iterator();
+    }
+}
+
+// Concrete implementation of another menu
+class DinnerMenu implements Menu {
+    private MenuItem[] items;
+    private int index = 0;
+
+    public DinnerMenu() {
+        items = new MenuItem[3];
+        addItem("Grilled Chicken", "Juicy grilled chicken with herbs");
+        addItem("Spaghetti Bolognese", "Spaghetti with meat sauce");
+        addItem("Vegetarian Stir-Fry", "Fresh vegetables stir-fried");
+    }
+
+    public void addItem(String name, String description) {
+        MenuItem item = new MenuItem(name, description);
+        if (index < items.length) {
+            items[index] = item;
+            index++;
+        }
+    }
+
+    @Override
+    public Iterator<MenuItem> createIterator() {
+        return new DinnerMenuIterator(items);
+    }
+}
+
+// Iterator implementation for the dinner menu
+class DinnerMenuIterator implements Iterator<MenuItem> {
+    private MenuItem[] items;
+    private int position = 0;
+
+    public DinnerMenuIterator(MenuItem[] items) {
+        this.items = items;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return position < items.length && items[position] != null;
+    }
+
+    @Override
+    public MenuItem next() {
+        MenuItem menuItem = items[position];
+        position++;
+        return menuItem;
+    }
+}
+
+// Client code
+public class IteratorPatternExample {
+    public static void main(String[] args) {
+        Menu breakfastMenu = new BreakfastMenu();
+        Menu dinnerMenu = new DinnerMenu();
+
+        System.out.println("---- Breakfast Menu ----");
+        printMenu(breakfastMenu.createIterator());
+
+        System.out.println("\n---- Dinner Menu ----");
+        printMenu(dinnerMenu.createIterator());
+    }
+
+    private static void printMenu(Iterator<MenuItem> iterator) {
+        while (iterator.hasNext()) {
+            MenuItem menuItem = iterator.next();
+            System.out.println(menuItem);
+        }
+    }
+}
